@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MMBT4403-7-F
+D Trans GP BJT PNP 40V 0.6A 3Pin SOT23
+K
+F https://www.diodes.com//assets/Datasheets/MMBT4403.pdf
+$ENDCMP
+#
+#End Doc Library
