@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "STP85NF55"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2022-08-27-07:22:18)
+    (mountForm default
+        (footprintRef "TO255P460X1020X2008-3P")
+        (spec "System")
+    )
+)

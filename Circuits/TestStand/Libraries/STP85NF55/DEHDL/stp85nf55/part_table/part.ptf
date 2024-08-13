@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'STP85NF55'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "STMicroelectronics", "STP85NF55" (!) = "", "TO255P460X1020X2008-3P", "Transistor Outline, Vertical", "511-STP85NF55", "https://www.mouser.co.uk/ProductDetail/STMicroelectronics/STP85NF55?qs=mdiO5HdF0KgIATm5G3vEuw%3D%3D", "Automotive-grade N-channel 55 V, 0.0062 Ohm typ., 42 A, STripFET(TM) II Power MOSFET in TO-220 package", "https://www.st.com/resource/en/datasheet/stb85nf55t4.pdf", "4.6 mm"
+END_PART
+
+END.

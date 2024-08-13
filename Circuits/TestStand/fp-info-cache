@@ -1,4 +1,4 @@
-23495504007823858
+23497227592449416
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -62506,6 +62506,13 @@ Library
 SOT96P240X110-3N
 SOT23 (1)
 Transistor BJT PNP
+0
+3
+3
+Library
+TO255P460X1020X2008-3P
+---0TO-220_(Height=4.6mm)
+Integrated Circuit
 0
 3
 3

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP STP85NF55
+D Automotive-grade N-channel 55 V, 0.0062 Ohm typ., 42 A, STripFET(TM) II Power MOSFET in TO-220 package
+K
+F https://www.st.com/resource/en/datasheet/stb85nf55t4.pdf
+$ENDCMP
+#
+#End Doc Library
