@@ -1,4 +1,4 @@
-23753874427059571
+23755598208221658
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -64672,6 +64672,13 @@ CONN7_2601-1107_WAG
 0
 14
 14
+Library
+DIP-4_VO615A_VIS
+
+VO615A-X001 
+0
+4
+4
 Library
 MF05A_TEX
 
