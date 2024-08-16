@@ -18865,6 +18865,73 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 405.13 130.81 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "570aade7-3f22-4f6c-ae7e-b3b560a08ac0")
+		(property "Reference" "#PWR038"
+			(at 398.78 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 401.32 130.8099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 405.13 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 405.13 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 405.13 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "30198d58-82b8-4415-88b4-d7078e85aa2a")
+		)
+		(instances
+			(project "TestStand"
+				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
+					(reference "#PWR038")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 40.64 176.53 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -23369,6 +23436,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+BATT")
+		(at 373.38 123.19 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "96ee5ce4-90c5-495b-b346-b8efd8af0647")
+		(property "Reference" "#PWR039"
+			(at 377.19 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+BATT"
+			(at 369.57 123.1899 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 373.38 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 373.38 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 373.38 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5755edf5-4d5a-427d-bc6d-97b3ebe44b54")
+		)
+		(instances
+			(project "TestStand"
+				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
+					(reference "#PWR039")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 190.5 120.65 270)
 		(unit 1)
@@ -23575,6 +23709,73 @@
 			(project "TestStand"
 				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
 					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+BATT")
+		(at 373.38 125.73 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9b58b7d1-f919-4192-886d-f7b62987d2b7")
+		(property "Reference" "#PWR077"
+			(at 377.19 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+BATT"
+			(at 369.57 125.7299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 373.38 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 373.38 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 373.38 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "51f474d9-f04c-4d63-a15d-eafc39120607")
+		)
+		(instances
+			(project "TestStand"
+				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
+					(reference "#PWR077")
 					(unit 1)
 				)
 			)
@@ -25882,6 +26083,81 @@
 			(project "TestStand"
 				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
 					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "2024-08-14_06-49-46:CONN4_2606-1104/010-000_WAG")
+		(at 405.13 123.19 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c62a895b-37db-4b6e-affd-b8af7af94030")
+		(property "Reference" "J16"
+			(at 419.1 125.7299 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "CONN4_2606-1104/010-000_WAG"
+			(at 419.1 128.2699 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Library:2606-1104&slash_010-000"
+			(at 415.29 129.794 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 405.13 123.19 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 405.13 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "f135ed19-d304-43e0-a2ca-343b62f5ef02")
+		)
+		(pin "2"
+			(uuid "f9c4bf37-fce5-4a87-b629-5e1dfb340b4e")
+		)
+		(pin "1"
+			(uuid "10998786-741c-4680-82e8-2256e45fbea0")
+		)
+		(pin "4"
+			(uuid "21f3de07-6cec-4064-a613-7560b03a2a9f")
+		)
+		(instances
+			(project "TestStand"
+				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
+					(reference "J16")
 					(unit 1)
 				)
 			)
@@ -28691,6 +28967,73 @@
 			(project "TestStand"
 				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
 					(reference "Y1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+BATT")
+		(at 373.38 128.27 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f1514ab9-73c3-414d-a2f2-7ba59234002b")
+		(property "Reference" "#PWR0108"
+			(at 377.19 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+BATT"
+			(at 369.57 128.2699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 373.38 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 373.38 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 373.38 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "400ae8f4-84cd-4994-b930-9b6d3bbf1af3")
+		)
+		(instances
+			(project "TestStand"
+				(path "/685411e9-e044-4af3-ae59-8bb36f8f4098"
+					(reference "#PWR0108")
 					(unit 1)
 				)
 			)

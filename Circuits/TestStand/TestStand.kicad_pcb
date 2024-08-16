@@ -5082,7 +5082,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C19"
-			(at 4.5 0 360)
+			(at 4.5 0 0)
 			(layer "F.SilkS")
 			(uuid "d6ab02ff-a820-4f1c-b1f9-aeec25e088ab")
 			(effects
@@ -5093,7 +5093,7 @@
 			)
 		)
 		(property "Value" "2.2uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7288bd53-460e-4079-b275-12bcf93e3de2")
@@ -5105,7 +5105,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5fc611b5-d101-4aa4-88d4-806c20010eff")
@@ -5117,7 +5117,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "20877049-d65c-42d8-8da4-ec47804fa445")
@@ -5129,7 +5129,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "03994c9a-9318-4a5f-9b09-29c058b79081")
@@ -5141,7 +5141,7 @@
 			)
 		)
 		(property "LCSC" "C377773"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e9a02282-f1c3-4b01-ab64-f0271f536bfa")
@@ -5258,7 +5258,7 @@
 			(uuid "4bc8a1d0-dea5-4f47-af26-82b136f471ad")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "2c0d81ba-3bb8-4511-a8fb-e6a6fc609f9b")
 			(effects
@@ -5316,7 +5316,7 @@
 			)
 		)
 		(property "Value" "STP85NF55"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "33149095-32ed-4826-90a9-3ed0fcb8e076")
@@ -5328,7 +5328,7 @@
 			)
 		)
 		(property "Footprint" "Library:TO255P460X1020X2008-3P"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "707aa885-7776-45fe-8176-7fb9d59fbd4e")
@@ -5340,7 +5340,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.st.com/resource/en/datasheet/stb85nf55t4.pdf"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "51377573-4ae7-4675-9fdb-b46d30897f92")
@@ -5561,7 +5561,7 @@
 			(uuid "9d476694-1291-45dd-b77e-794c60e10284")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "3565c388-343a-4b26-9db8-1791d042b798")
 			(effects
@@ -10789,7 +10789,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C37"
-			(at 0 -2 360)
+			(at 0 -2 0)
 			(layer "F.SilkS")
 			(uuid "5a353cab-70ab-4a23-83d8-9c3898323b81")
 			(effects
@@ -10800,7 +10800,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4cf4e519-36dc-4854-9196-9ebe4b265d02")
@@ -10812,7 +10812,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c95c2a6b-0a01-421f-84e0-40023be63c62")
@@ -10824,7 +10824,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "54b98c71-247b-449e-8ac4-ec2170f21d62")
@@ -10836,7 +10836,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6f35bc2c-6a54-4313-85ab-5b40e31cbf33")
@@ -10965,7 +10965,7 @@
 			(uuid "6ad0bd65-32fc-493a-95a6-ec2fa8430339")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "516a6d87-ba18-4e38-8298-bb4e7707ac61")
 			(effects
@@ -11458,7 +11458,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C20"
-			(at 4 -0.71 360)
+			(at 4 -0.71 0)
 			(layer "F.SilkS")
 			(uuid "0a40136b-5ed0-4e46-98ae-8807bff1aa45")
 			(effects
@@ -11469,7 +11469,7 @@
 			)
 		)
 		(property "Value" "4.7pF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7e0c8540-901e-40f1-8a67-8883032e4f87")
@@ -11481,7 +11481,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a5cbaa75-b124-43de-8d04-98ba403e093e")
@@ -11493,7 +11493,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "fcd7188b-24b8-474b-b978-09fbe6f6da80")
@@ -11505,7 +11505,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "56b984b0-f570-47f1-895a-8990ac9c297e")
@@ -11517,7 +11517,7 @@
 			)
 		)
 		(property "LCSC" "C519993"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c9ef699d-063e-4e85-9e0a-0b05ee03ea37")
@@ -11634,7 +11634,7 @@
 			(uuid "5f83f86e-3a87-4882-8fa5-e5bf3f95ddfc")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "4caf8ff4-c158-4923-82e1-f8af161697c5")
 			(effects
@@ -14854,7 +14854,7 @@
 		(descr "Inductor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "inductor")
 		(property "Reference" "L4"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.SilkS")
 			(uuid "80b29143-99cb-4afd-9b6a-f7c7d0e71b2e")
 			(effects
@@ -14865,7 +14865,7 @@
 			)
 		)
 		(property "Value" "2.7nH"
-			(at 0 1.17 360)
+			(at 0 1.17 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a3a92ea5-db50-4b06-9c7e-ec32c1859d84")
@@ -14877,7 +14877,7 @@
 			)
 		)
 		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "17db388e-730e-42b5-b44f-72c5ec7c2e75")
@@ -14889,7 +14889,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "24f6e22a-a531-4ac5-8944-b0db4639fa16")
@@ -14901,7 +14901,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "19f72d4d-9ec4-46f3-9c39-3e648753d970")
@@ -15011,7 +15011,7 @@
 			(uuid "820d5057-9f10-46d7-8efd-17a6304f4e2c")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "8ce64405-218e-45ed-b228-5a258a327905")
 			(effects
@@ -17072,7 +17072,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C35"
-			(at 0 -2 360)
+			(at 0 -2 0)
 			(layer "F.SilkS")
 			(uuid "88ec7e18-1b0f-482c-843e-654add7c902f")
 			(effects
@@ -17083,7 +17083,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "80822c3c-d330-4093-91ff-cda8b69944a0")
@@ -17095,7 +17095,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "db19b7e6-27ed-4dc3-b3e1-376ff0754ec4")
@@ -17107,7 +17107,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0019a713-43d4-4a78-b222-c550ab485723")
@@ -17119,7 +17119,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "fcf888ed-2bd2-4efe-ad7d-6becad0e9e84")
@@ -17248,7 +17248,7 @@
 			(uuid "c03edac3-2b45-4fa4-99b5-2ade29c5d08f")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "eed82757-78d4-4b4e-82b4-a9ec0ee7a282")
 			(effects
@@ -17319,7 +17319,7 @@
 			)
 		)
 		(property "Footprint" "Library:TO-220_STM"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1f392aa4-b050-4ada-9260-701879b0d983")
@@ -17331,7 +17331,7 @@
 			)
 		)
 		(property "Datasheet" "LD1085V50"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "90abf211-aa68-4d89-87fa-041559aac6e6")
@@ -17343,7 +17343,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f4600c75-5245-4a00-b16f-a3ce43f697a9")
@@ -21916,7 +21916,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C33"
-			(at 0 -2 360)
+			(at 0 -2 0)
 			(layer "F.SilkS")
 			(uuid "7581b86c-a835-4828-a97b-eb054fe6b356")
 			(effects
@@ -21927,7 +21927,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6d1ce1a6-cdc5-4293-a3d6-4e87946f2333")
@@ -21939,7 +21939,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ea95bbc3-a22a-4a5b-b795-c35677777e7f")
@@ -21951,7 +21951,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9608c887-30a4-4143-838d-644e1a10cfb1")
@@ -21963,7 +21963,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "07c63f32-4b4e-4e31-92f2-b4255f7153d4")
@@ -22092,7 +22092,7 @@
 			(uuid "fe7fe60a-e143-4023-958b-e2fd381f7898")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "5da1f925-3960-43c0-b2ac-db463b3be774")
 			(effects
@@ -24188,7 +24188,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor")
 		(property "Reference" "C31"
-			(at 0 -2 360)
+			(at 0 -2 0)
 			(layer "F.SilkS")
 			(uuid "fccf4f8d-c7c6-4641-a1d8-3cce0cb5e898")
 			(effects
@@ -24199,7 +24199,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "602d3021-ec1d-46d1-ad62-6d6200ca8a05")
@@ -24211,7 +24211,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6913b29f-fc75-47af-8b09-1c46dcd4d2f3")
@@ -24223,7 +24223,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "09d7b124-b114-41b7-9ffc-3e8fbc3da30d")
@@ -24235,7 +24235,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e3d38252-0de8-47b7-b45f-7862bde0675e")
@@ -24364,7 +24364,7 @@
 			(uuid "a26dc624-f871-46a8-a4fc-44d803e04e44")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "03a077bc-d7cd-42b6-86fa-c73fbcb48e75")
 			(effects
@@ -27503,7 +27503,7 @@
 		(descr "Inductor SMD 0402 (1005 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: http://www.tortai-tech.com/upload/download/2011102023233369053.pdf), generated with kicad-footprint-generator")
 		(tags "inductor")
 		(property "Reference" "L5"
-			(at -2.5 0.21 360)
+			(at -2.5 0.21 0)
 			(layer "F.SilkS")
 			(uuid "136f9d5a-464c-4835-92d2-93f3be6b8429")
 			(effects
@@ -27514,7 +27514,7 @@
 			)
 		)
 		(property "Value" "8.2nH"
-			(at 0 1.17 360)
+			(at 0 1.17 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "764e7291-7124-42a6-9edc-6952454fa01d")
@@ -27526,7 +27526,7 @@
 			)
 		)
 		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "59c93af1-9a48-401d-ac26-bfacbddce451")
@@ -27538,7 +27538,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "899423ee-1930-4b63-8ec4-38d3aa685171")
@@ -27550,7 +27550,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "66caa607-8a8e-4197-b33b-7693c95988fc")
@@ -27660,7 +27660,7 @@
 			(uuid "319a1252-bb53-4354-99f5-9a49ea4d61d6")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "3ee790dd-b099-4593-a287-bfc16a98ae03")
 			(effects
@@ -33177,7 +33177,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "d9a86532-505c-4bd4-afd0-2fd39a3e1bbc")
@@ -33189,7 +33189,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ec4f10b2-8fa3-4c7c-8d77-70e1842d104c")
@@ -33201,7 +33201,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "3240865c-655b-4669-8c19-4ccd25fa3c09")
@@ -33213,7 +33213,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b0d413bf-cb46-4b0b-a18d-804e1571bd59")
@@ -33342,7 +33342,7 @@
 			(uuid "79e7c6fb-63df-4571-8a74-6cd8cbfd5f63")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "9cd2b28a-a658-4def-9e23-3b69c5294663")
 			(effects
