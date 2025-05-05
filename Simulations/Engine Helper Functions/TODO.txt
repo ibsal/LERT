@@ -1,1 +1,0 @@
-Rewrite bartz as standalone function accepting transport table, pressure, and temperature

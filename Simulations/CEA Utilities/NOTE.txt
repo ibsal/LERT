@@ -1,3 +1,0 @@
-CEA Rocket includes functions for parsing CEA data using the "rocket" selection
-CEA Transport includes functions for parsing cea data using the "tp" selection
-CEA Results contains output text files from NASA CEARUN

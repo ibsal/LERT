@@ -1,4 +1,3 @@
-
 CombustionPressure = 300 * 6894.76; %PA
 AmbientPressure = 14.6959 * 6894.76; %PA Standard atmosphere
 CombustionGamma = 1.2;
@@ -9,7 +8,7 @@ AreaRatio = (1./ExitMach) .* ((2./(CombustionGamma+1)) .* (1 + (CombustionGamma-
 Thrust = 250 * 4.44822; %Thrust, Newtons
 OFRatio = 5;
 
-cea = readCEA('ceaoutput.txt');
+cea = readCEA('rocketN2OxIPA.txt');
 Mexit = ceaInterp(cea, 'Mach_e', 'O_F', OFRatio);
 Aexit = ceaInterp(cea, 'a_e', 'O_F', OFRatio);
 Cstar = ceaInterp(cea, 'Cstar', 'O_F', OFRatio);
@@ -18,10 +17,10 @@ CEAreaRatio= ceaInterp(cea, 'Ae_At', 'O_F', OFRatio);
 Mflow = Thrust/Vexit; %kg/s
 
 ThroatArea = Mflow * Cstar / CombustionPressure; %m^2
-ThroatRadius = sqrt(ThroatArea)/pi; %m
+ThroatRadius = sqrt(ThroatArea/pi); %m
 ExitArea = CEAreaRatio * (ThroatArea);
 ThroatRadiusIN = ThroatRadius * 39.3701;
-ExitRadius = sqrt(ExitArea)/pi;
+ExitRadius = sqrt(ExitArea/pi);
 ExitRadiusIN = ExitRadius * 39.3701;
 
 NozzleLengthIN = ExitRadiusIN * 1.8 * 2;
@@ -38,9 +37,16 @@ gamma_e = ceaInterp(cea, 'gamma_e', 'O_F', OFRatio);
 Machcurve = machFromArea(stationrad, gamma_e, ThroatRadiusIN);          % supersonic
 
 T    = Tcombustion ./ (1 + (gamma_e-1)/2 .* Machcurve.^2);
+P = CombustionPressure .* (1 + (gamma_e-1).*0.5 .* Machcurve.^2).^(-1*gamma_e./(gamma_e-1));
+
+% Target mass flow for oxidizer and fuel
+mdotF = Mflow/(1+OFRatio) 
+mdotO = Mflow - mdotF
 
 
-Mflow 
+% bulk-gas properties at this O/F (CEA exit columns are close enough)
+cp0  = ceaInterp(cea,'Cp','O_F',OFRatio);      % J/(kg·K)
+Pr0  = ceaInterp(cea,'Pr','O_F',OFRatio);      % –
+T0   = Tcombustion;                            % K (stagnation)
 
-MdotO/mdotF = Ofratio
-mdotF*Ofratio + mdotF = Mflow
+h = bartz(P, T, M, stationarea.*0.00064516, ThroatArea, 0.25, OFRatio, 300, Cstar, )
