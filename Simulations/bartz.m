@@ -15,15 +15,16 @@ function h = bartz(Pstation, Tstation, M, Astation, Athroat, Tfillet, of, Thw, c
 % large txt files many times. 
 hgas = zeros(length(Pstation),1);
 for i = 1:length(Pstation)
-
+    
     %% Reference Temperature (T*) Calculation   
 % Used for calculating some transport properties in this calculation. 
 
-    Tstar =  Tstation(i) .* (1 + 0.032.*M(i).^2 + 0.58.*(Thw./Tstation(i) - 1));
+    Tstar =  Tstation(i) .* (1 + 0.032.*M(i).^2 + 0.58.*(Thw(i)./Tstation(i) - 1));
     
-    gamma = interpCEAtransport(tbl, Pstation(i), Tstar, of, 'gamma');
+    gamma = interpCEAtransport(tbl, Pstation(i), Tstation(i), of, 'gamma');
+
     Tstag = Tstation(i) * (1 + 0.5 * (gamma-1) * M(i)^2);
-    Pstag = Pstation(i) * (1+ 0.5 * (gamma-1) * M(i)^2)^(gamma/(gamma-1));
+    Pstag = Pstation(i) * (1+ 0.5 * (gamma-1) * M(i)^2).^(gamma/(gamma-1));
 
     %% Bartz Calculation
     % Uses frozen solution 
@@ -31,17 +32,17 @@ for i = 1:length(Pstation)
     % Use temperature at station for all other properties 
     
     Dt = 2 * sqrt(Athroat/pi); % Throat Diameter
-    mu = interpCEAtransport(tbl, Pstation(i), Tstar, of, 'mu', 'fr', 'nearest');  %combustion gas viscociyt 
-    Cp = interpCEAtransport(tbl, Pstation(i), Tstation(i), of, 'Cp', 'fr', 'nearest');
-    lambda = interpCEAtransport(tbl, Pstation(i), Tstar, of, 'k', 'fr', 'nearest'); %combustion gas thermal conductivity 
+    mu = interpCEAtransport(tbl, Pstation(i), Tstar, of, 'mu', 'fr', 'linear');  %combustion gas viscociyt 
+    Cp = interpCEAtransport(tbl, Pstation(i), Tstation(i), of, 'Cp', 'fr', 'linear');
+    lambda = interpCEAtransport(tbl, Pstation(i), Tstar, of, 'k', 'fr', 'linear'); %combustion gas thermal conductivity 
     Pr = (Cp * mu)/lambda; %combustion gas prandtl number
     
     
     % actual bartz calc
     
-    sigma = ((0.5 * (Thw/Tstag) * (1 + 0.5*(gamma-1) * M(i)^2) + 0.5)^0.68 * (1 + 0.5*(gamma-1) * M(i)^2)^0.12)^-1;
+    sigma = ((0.5 * (Thw(i)/Tstag) * (1 + 0.5*(gamma-1) * M(i)^2) + 0.5)^0.68 * (1 + 0.5*(gamma-1) * M(i)^2)^0.12)^-1;
 
-    hgas(i) = 0.026 * Dt^-2 * mu^0.2 * Cp * Pr^-0.6 * Pstag^0.8 * cstar^-0.8 * Dt^0.1 * Tfillet^-0.1 * Athroat^0.9 * Astation(i)^-0.9 * sigma;
+    hgas(i) = 0.026 * (1/Dt^0.2) * mu^0.2 * Cp * (1/Pr^0.6) * Pstag^0.8 * cstar^-0.8 * Dt^0.1 * Tfillet^-0.1 * Athroat^0.9 * Astation(i)^-0.9 * sigma;
 end
 h = hgas;
 end
