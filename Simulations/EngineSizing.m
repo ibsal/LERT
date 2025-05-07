@@ -6,7 +6,7 @@ ExitMach = sqrt( 2/(CombustionGamma-1) * ( (CombustionPressure./AmbientPressure)
 AreaRatio = (1./ExitMach) .* ((2./(CombustionGamma+1)) .* (1 + (CombustionGamma-1)./2 .* ExitMach.^2)) .^ ((CombustionGamma+1)./(2*(CombustionGamma-1)));
 
 Thrust = 250 * 4.44822; %Thrust, Newtons
-OFRatio = 2;
+OFRatio = 3.5;
 
 cea = readCEA('rocketN2OxIPA.txt');
 Mexit = ceaInterp(cea, 'Mach_e', 'O_F', OFRatio);
@@ -23,16 +23,16 @@ ThroatRadiusIN = ThroatRadius * 39.3701;
 ExitRadius = sqrt(ExitArea/pi);
 ExitRadiusIN = ExitRadius * 39.3701;
 
-NozzleLengthIN = 1.8;
+NozzleLengthIN = 1.5;
 
 ChamberLengthIN = 3;
-ChamberRadiusIN = 1;
+ChamberRadiusIN = 3;
 Lstar = (ChamberLengthIN * ChamberRadiusIN^2 * pi)/(ThroatRadiusIN^2 * pi);
 
-simDx = 0.01;
+simDx = 0.0025;
 
 x = 0:simDx:(ChamberLengthIN + NozzleLengthIN);
-fillets = 0.5; %in
+fillets = 1; %in
 [stationrad, stationarea] = combustionChamberProfile(x, ChamberRadiusIN, fillets, 45, fillets, ThroatRadiusIN, ChamberLengthIN, 15, ExitRadiusIN,3, NozzleLengthIN);
 
 Tcombustion = ceaInterp(cea, 'T_c', 'O_F', OFRatio);
@@ -62,14 +62,14 @@ h = @(Thw, i) bartz(P(i), T(i), Machcurve(i), stationarea(i).*0.00064516, Throat
 Ncc = 100; %number of coolant channels
 Agas = (2*pi*stationrad.*0.0254.*simDx.*0.0254)/Ncc;
 
-Taw = T.*0.98;
+Taw = T.*0.9;
 
 
 wallthickness = 0.03; %in
-hcoolant = 100*10^3 %W/M^2K
-height = 0.02; %in
+hcoolant = 25*10^3 %W/M^2K
+height = 0.03; %in
 width = 0.03; %in
-k = 237;
+k = 15;
 finwidth = 0.04; %in
 Lc = height*0.0254 + (0.5 * finwidth*0.0254)/2;
 m = sqrt(2*(hcoolant)/(k * 0.5 * finwidth*0.0254));
@@ -83,8 +83,8 @@ qWall = @(Thw, Tcw, i) k.*Agas(i).*(Thw -Tcw)./(wallthickness.*0.0254);
 
 qGas = @(Thw, i) h(Thw, i).*Agas(i).*(Taw(i)-Thw);
 
-Tcoolantinit = 290; %Initial Coolant temperature, K
-Pcoolantinit = 500 * 6894.76; % Pa
+Tcoolantinit = 300; %Initial Coolant temperature, K
+Pcoolantinit = 400 * 6894.76; % Pa
 
 N   = length(stationrad);          % total axial cells
 
@@ -157,7 +157,7 @@ end
 %% ---------------- P L O T S ----------------
 
 %% ---------- temperatures + dual‑condition shading + legend labels ----
-Tmax = 500;                      % wall‑temperature limit (K)
+Tmax = 1100;                      % wall‑temperature limit (K)
 
 axT  = subplot(2,2,1);  hold(axT,'on');
 
