@@ -6,7 +6,7 @@ ExitMach = sqrt( 2/(CombustionGamma-1) * ( (CombustionPressure./AmbientPressure)
 AreaRatio = (1./ExitMach) .* ((2./(CombustionGamma+1)) .* (1 + (CombustionGamma-1)./2 .* ExitMach.^2)) .^ ((CombustionGamma+1)./(2*(CombustionGamma-1)));
 
 Thrust = 250 * 4.44822; %Thrust, Newtons
-OFRatio = 2;
+OFRatio = 5;
 
 cea = readCEA('rocketN2OxIPA.txt');
 Mexit = ceaInterp(cea, 'Mach_e', 'O_F', OFRatio);
@@ -23,7 +23,7 @@ ThroatRadiusIN = ThroatRadius * 39.3701;
 ExitRadius = sqrt(ExitArea/pi);
 ExitRadiusIN = ExitRadius * 39.3701;
 
-NozzleLengthIN = ExitRadiusIN * 1.8;
+NozzleLengthIN = 1.8;
 
 ChamberLengthIN = 3;
 ChamberRadiusIN = 1;
@@ -84,34 +84,56 @@ qWall = @(Thw, Tcw, i) k.*Agas(i).*(Thw -Tcw)./(wallthickness.*0.0254);
 qGas = @(Thw, i) h(Thw, i).*Agas(i).*(Taw(i)-Thw);
 
 Tcoolantinit = 300; %Initial Coolant temperature, K
-Tbulkcoolant = Tcoolantinit;
-Tcw = 0;
-Thw = 0;
-q = 0;
-deltaT = 0;
-he = 0;
-for i=1:length(stationrad)
-    cpIPA =  2600;
-    %% ❶  Wrap both equations in a single anonymous function
-    %    x(1) ≡ Tcw   ,  x(2) ≡ Thw
-    f = @(x) [ ...
-        qCoolant(x(1), Tbulkcoolant(i)) - qGas(x(2), i) ;                 % = 0
-        qCoolant(x(1), Tbulkcoolant(i)) - qWall(x(2), x(1), i) ];         % = 0
+Pcoolantinit = 300 * 6894.76; % Pa
+
+N   = length(stationrad);          % total axial cells
+
+% --- pre‑allocate result vectors (faster & avoids confusing zeros) ------
+Tcw          = zeros(1,N);         % cold‑wall temperature
+Thw          = zeros(1,N);         % hot‑wall temperature
+q            = zeros(1,N);         % gas‑side heat flux
+he           = zeros(1,N);         % Bartz hg
+deltaT       = zeros(1,N);         % coolant ΔT per cell
+
+Tbulkcoolant = zeros(1,N+1);       % bulk coolant temp at cell nodes
+Tbulkcoolant(end) = Tcoolantinit;  % *** inlet is NOW at the NOZZLE exit ***
+Pcoolant = zeros(1,N+1);
+Pcoolant(end) = Pcoolantinit;
+opts = optimset('Display','off');
+cpIPA = 2600;
+
+Ripa = 8.3144598/60.0950 * 10^3; %J/kg K
+Rhocoolant = zeros(1,N+1);
+Rhocoolant(end) = Pcoolant(end)/(Ripa * Tbulkcoolant(end));
+
+for i = N:-1:1                         % *** march from nozzle → chamber ***
     
-    %% ❷  Provide a reasonable initial guess  (degrees consistent with q‑functions!)
-    x0 = [Tbulkcoolant(i);  T(i)];  % example
-    
-    %% ❸  Call FSOLVE  (Optimization Toolbox)
-    opts = optimoptions('fsolve','Display','iter','FunctionTolerance',1*10^-9);
-    var   = fsolve(f, x0, opts);
-    he = [he, h(var(2), i)];
-    Tcw = [Tcw, var(1)];
-    Thw = [Thw, var(2)];
-    q = [q, qGas(Thw(end), i)];
-    deltaT = [deltaT, q(end)./((mdotF./Ncc) * cpIPA)];
-    %deltaT = [deltaT, deltaT(end)];
-    Tbulkcoolant = [Tbulkcoolant, Tbulkcoolant(end) + deltaT(end)];
+    bulkIn = Tbulkcoolant(i+1);       % coolant entering this cell (downstream)
+
+    % --- FSOLVE for wall / coolant interface temps ---------------------
+    f  = @(x) [ ...
+        qCoolant(x(1), bulkIn) - qGas(x(2), i) ; ...
+        qCoolant(x(1), bulkIn) - qWall(x(2), x(1), i) ];
+
+    x0 = [bulkIn ;  T(i)];            % initial guess
+    var= fsolve(f, x0, opts);         % var(1)=Tcw , var(2)=Thw
+
+    % --- store results --------------------------------------------------
+    Tcw(i) = var(1);
+    Thw(i) = var(2);
+    he(i)  = h(var(2), i);
+
+    q(i)       = qGas(Thw(i), i);
+    deltaT(i)  = q(i) / ((mdotF/Ncc) * cpIPA);
+
+    % coolant leaving this cell (upstream) becomes bulkIn for next i‑1
+    Tbulkcoolant(i) = bulkIn + deltaT(i);
+    if(ipa(2.068e+6, Tbulkcoolant(end)) == "VAPOR")
+        disp("WARNING VAPOR IN COOOLANT LINES")
+    end
 end
+
+
 subplot(2,2,1)
 plot(Thw)
 hold on
@@ -122,7 +144,7 @@ plot(Taw)
 legend("Hot Wall", "Cold Wall", "Coolant", "Combustion Temp", "Adiabatic Wall Temp")
 hold off
 subplot(2,2,2)
-plot(Thw(2:end)'-Taw)
+plot(Thw'-Taw)
 ylabel("Temperature Difference Between Taw and Thw")
 subplot(2,2,3)
 plot(he*10^-3)
