@@ -59,18 +59,18 @@ h = @(Thw, i) bartz(P(i), T(i), Machcurve(i), stationarea(i).*0.00064516, Throat
 %hg(Taw - Twg) = q = (k/t) * (Twg - Twc) = hc * (Twc - Tco)
 
 
-Ncc = 30; %number of coolant channels
+Ncc = 100; %number of coolant channels
 Agas = (2*pi*stationrad.*0.0254.*simDx.*0.0254)/Ncc;
 
 Taw = T.*0.98;
 
 
-wallthickness = 0.01; %in
+wallthickness = 0.05; %in
 hcoolant = 10*10^3 %W/M^2K
-height = 0.05; %in
-width = 0.1; %in
+height = 0.02; %in
+width = 0.03; %in
 k = 237;
-finwidth = 0.025; %in
+finwidth = 0.04; %in
 Lc = height*0.0254 + (0.5 * finwidth*0.0254)/2;
 m = sqrt(2*(hcoolant)/(k * 0.5 * finwidth*0.0254));
 nfn = tanh(m*Lc)/(m*Lc);
@@ -83,8 +83,8 @@ qWall = @(Thw, Tcw, i) k.*Agas(i).*(Thw -Tcw)./(wallthickness.*0.0254);
 
 qGas = @(Thw, i) h(Thw, i).*Agas(i).*(Taw(i)-Thw);
 
-Tcoolantinit = 300; %Initial Coolant temperature, K
-
+Tcoolantinit = 290; %Initial Coolant temperature, K
+Pcoolantinit = 500 * 6894.76; % Pa
 
 N   = length(stationrad);          % total axial cells
 
@@ -97,14 +97,31 @@ deltaT       = zeros(1,N);         % coolant ΔT per cell
 
 Tbulkcoolant = zeros(1,N+1);       % bulk coolant temp at cell nodes
 Tbulkcoolant(end) = Tcoolantinit;  % *** inlet is NOW at the NOZZLE exit ***
+Pcoolant = zeros(1,N+1);
+Pcoolant(end) = Pcoolantinit;
 opts = optimset('Display','off');
 cpIPA = 2600;
+Vapor = zeros(1, N);
 
-Ripa = 8.3144598/60.0950 * 10^3 %J/kg K
+Ripa = 8.3144598/60.0950 * 10^3; %J/kg K
+Rhocoolant = zeros(1,N+1);
+Rhocoolant(end) = Pcoolant(end)/(Ripa * Tbulkcoolant(end));
+Vcoolant = zeros(1,N+1);
+Vcoolant(end) = (mdotF/Ncc)/(Rhocoolant(end) * width * 0.0254 * height * 0.0254);
+
+IPAkinematicViscocity = ipaKinV(Tbulkcoolant(end)); %m^2/s
+HydraulicDiameter = 4*(width *0.0254 *  height * 0.0254)/ (2*0.0254*width + 2*0.0254*height);
+ReIPA = zeros(1, N+1);
+ReIPA(end) = (Vcoolant(end) * HydraulicDiameter) / IPAkinematicViscocity;
+
+roughness = 6.3*10^-6;
+FrictionFactor = zeros(1, N+1);
+FrictionFactor(end) = darcy(roughness, HydraulicDiameter,ReIPA(end));
+
 for i = N:-1:1                         % *** march from nozzle → chamber ***
     
     bulkIn = Tbulkcoolant(i+1);       % coolant entering this cell (downstream)
-
+    pin = Pcoolant(i+1);
     % --- FSOLVE for wall / coolant interface temps ---------------------
     f  = @(x) [ ...
         qCoolant(x(1), bulkIn) - qGas(x(2), i) ; ...
@@ -120,11 +137,20 @@ for i = N:-1:1                         % *** march from nozzle → chamber ***
 
     q(i)       = qGas(Thw(i), i);
     deltaT(i)  = q(i) / ((mdotF/Ncc) * cpIPA);
+    Tbulkcoolant(i) = bulkIn + deltaT(i);
+    deltaP = (FrictionFactor(i+1) * Rhocoolant(i+1) * Vcoolant(i+1)^2 * simDx * 0.0254)/(2*HydraulicDiameter);
+    Pcoolant(i) = pin - deltaP;
+    Rhocoolant(i) = Pcoolant(i)/(Ripa * Tbulkcoolant(i));
+    Vcoolant(i) = (mdotF/Ncc)/(Rhocoolant(i) * width * 0.0254 * height * 0.0254);
+    IPAkinematicViscocity = ipaKinV(Tbulkcoolant(i));
+    ReIPA(i) = (Vcoolant(i) * HydraulicDiameter) / IPAkinematicViscocity;
+    FrictionFactor(i) = darcy(roughness, HydraulicDiameter,ReIPA(i));
 
     % coolant leaving this cell (upstream) becomes bulkIn for next i‑1
-    Tbulkcoolant(i) = bulkIn + deltaT(i);
-    if(ipa(2.068e+6, Tbulkcoolant(end)) == "VAPOR")
+
+    if(ipa(2.068e+6, Tbulkcoolant(i)) == "VAPOR")
         disp("WARNING VAPOR IN COOOLANT LINES")
+        Vapor
     end
 end
 
@@ -150,3 +176,7 @@ hold on
 plot(x, -stationrad)
 hold off
 axis equal
+
+figure;
+plot(Pcoolant.*0.000145038)
+hold on
