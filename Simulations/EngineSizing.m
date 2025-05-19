@@ -1,230 +1,226 @@
-CombustionPressure = 300 * 6894.76; %PA
-AmbientPressure = 14.6959 * 6894.76; %PA Standard atmosphere
-CombustionGamma = 1.2;
+%--------------------------------------------------------------
+%  REGENERATIVE-COOLED NOZZLE 1-D THERMAL / STRESS MODEL
+%  -- Stand-alone version  --
+%--------------------------------------------------------------
+%  * User-adjustable inputs are grouped in SECTION 1 below *
+%--------------------------------------------------------------
+%  * Code by Isaac Sal. Nice comment blocks by ChatGPT
+%--------------------------------------------------------------
+clear; clc;
 
-ExitMach = sqrt( 2/(CombustionGamma-1) * ( (CombustionPressure./AmbientPressure).^((CombustionGamma-1)/CombustionGamma) - 1 ) );
-AreaRatio = (1./ExitMach) .* ((2./(CombustionGamma+1)) .* (1 + (CombustionGamma-1)./2 .* ExitMach.^2)) .^ ((CombustionGamma+1)./(2*(CombustionGamma-1)));
+%% ========= 1) USER-ADJUSTABLE PARAMETERS =============================
+% -- GLOBAL DESIGN TARGETS ---------------------------------------------
+Thrust         = 250 * 4.44822;        % [N]  design thrust
+OFRatio        = 3;                  % [-]  oxidizer / fuel mass ratio
 
-Thrust = 250 * 4.44822; %Thrust, Newtons
-OFRatio = 3.5;
+% -- COMBUSTION CONDITIONS ---------------------------------------------
+CombustionPressure = 300 * 6894.76;    % [Pa]
+AmbientPressure    = 14.6959 * 6894.76;% [Pa]
 
-cea = readCEA('rocketN2OxIPA.txt');
-Mexit = ceaInterp(cea, 'Mach_e', 'O_F', OFRatio);
-Aexit = ceaInterp(cea, 'a_e', 'O_F', OFRatio);
-Cstar = ceaInterp(cea, 'Cstar', 'O_F', OFRatio);
-Vexit = Mexit * Aexit;
-CEAreaRatio= ceaInterp(cea, 'Ae_At', 'O_F', OFRatio);
-Mflow = Thrust/Vexit; %kg/s
+% -- CHAMBER / NOZZLE GEOMETRY (inches, gets converted internally) -----
+ChamberLengthIN = 3;                   % chamber length  [in]
+ChamberRadiusIN = 1;                   % chamber radius  [in]
+NozzleLengthIN  = 1.5;                 % nozzle length   [in]
+filletsIN       = 1;                   % blend radius    [in]
 
-ThroatArea = Mflow * Cstar / CombustionPressure; %m^2
-ThroatRadius = sqrt(ThroatArea/pi); %m
-ExitArea = CEAreaRatio * (ThroatArea);
-ThroatRadiusIN = ThroatRadius * 39.3701;
-ExitRadius = sqrt(ExitArea/pi);
-ExitRadiusIN = ExitRadius * 39.3701;
+% -- COOLANT-CHANNEL & WALL GEOMETRY -----------------------------------
+Ncc            = 40;       % number of coolant channels
+wallthickness  = 0.03;     % [in] wall separating hot & cold sides
+height         = 0.03;     % [in] channel height  (open gap)
+width          = 0.05;     % [in] channel width
+finwidth       = 0.04;     % [in] fin (land) width between channels
 
-NozzleLengthIN = 1.5;
+% -- THERMAL / MATERIAL PROPERTIES -------------------------------------
+hcoolant  = 25e3;          % [W/m^2-K] coolant-side h-coefficient
+k          = 15;           % [W/m-K]   wall conductivity
+Tcoolantinit = 300;        % [K]       coolant inlet temperature
+Pcoolantinit = 500 * 6894.76; % [Pa]   coolant inlet pressure
+cpIPA      = 2600;         % [J/kg-K]  IPA specific heat (assumed const.)
 
-ChamberLengthIN = 3;
-ChamberRadiusIN = 3;
-Lstar = (ChamberLengthIN * ChamberRadiusIN^2 * pi)/(ThroatRadiusIN^2 * pi);
+Echamber   = 180e9;        % [Pa] Young's modulus of wall
+CTEchamber = 17e-6;        % [1/K] thermal expansion coeff.
+Poissons   = 0.27;         % [-]
+Strength   = 400e6;        % [Pa] yield (for margin calc)
+roughness  = 6.3e-6;       % [m]
 
-simDx = 0.0025;
+StressFOS  = 2;            % [-]
+TempFOS    = 1.2;          % [-]
 
+RecoveryFactor = 0.91;     % 1 is worst case: assumes stagnation heating
+
+% -- NUMERICAL SETTINGS -------------------------------------------------
+simDx = 0.0025;            % [in] axial marching step
+Tmax  = 1100;              % [K]   hot-wall over-temp shading limit
+sfos  = StressFOS;                 % [-]   stress factor-of-safety requirement
+tfos  = TempFOS;               % [-]   temp  factor-of-safety requirement
+
+%% ========= 2) DERIVED CONSTANTS & PRECALC ============================
+IN2M   = 0.0254;            % in → m
+PSI2PA = 6894.76;           % psi → Pa  (for convenience later)
+
+offset = 0;  % dummy for plotting coolant at x(end)+dx (keep orig logic)
+
+%% ========= 3) CEA LOOK-UPS & INITIAL ENGINE GEOMETRY =================
+cea     = readCEA('rocketN2OxIPA.txt');
+Cstar   = ceaInterp(cea,'Cstar', 'O_F', OFRatio);
+Tcomb   = ceaInterp(cea,'T_c',   'O_F', OFRatio);
+Aexit   = ceaInterp(cea,'a_e',   'O_F', OFRatio);
+Mexit   = ceaInterp(cea,'Mach_e','O_F', OFRatio);
+CEAreaRatio = ceaInterp(cea,'Ae_At','O_F', OFRatio);
+Vexit   = Mexit * Aexit;
+
+Mflow = Thrust / Vexit;     % total propellant mass-flow [kg/s]
+mdotF = Mflow / (1 + OFRatio);      % fuel  mdot [kg/s]
+mdotO = Mflow - mdotF;              % oxid. mdot [kg/s]
+
+ThroatArea   = Mflow * Cstar / CombustionPressure;  % [m^2]
+ThroatRadius = sqrt(ThroatArea/pi);                 % [m]
+ExitArea     = CEAreaRatio * ThroatArea;            % [m^2]
+
+ThroatRadiusIN = ThroatRadius / IN2M;               % [in]
+ExitRadiusIN   = sqrt(ExitArea/pi) / IN2M;          % [in]
+
+Lstar = (ChamberLengthIN * ChamberRadiusIN^2 * pi) / (ThroatRadiusIN^2 * pi);
+
+%% ========= 4) AXIAL GRID & COMBUSTION-SIDE PROFILES ==================
+% axial stations from nozzle exit (x=0) → chamber rear-wall
 x = 0:simDx:(ChamberLengthIN + NozzleLengthIN);
-fillets = 1; %in
-[stationrad, stationarea] = combustionChamberProfile(x, ChamberRadiusIN, fillets, 45, fillets, ThroatRadiusIN, ChamberLengthIN, 15, ExitRadiusIN,3, NozzleLengthIN);
+[stationrad, stationarea] = combustionChamberProfile(x, ChamberRadiusIN, ...
+        filletsIN, 45, filletsIN, ThroatRadiusIN, ChamberLengthIN, ...
+        15, ExitRadiusIN, 3, NozzleLengthIN);
 
-Tcombustion = ceaInterp(cea, 'T_c', 'O_F', OFRatio);
-gamma_e = ceaInterp(cea, 'gamma_e', 'O_F', OFRatio);
-Machcurve = machFromArea(stationrad, gamma_e, ThroatRadiusIN);          % supersonic
+gamma_e    = ceaInterp(cea,'gamma_e','O_F',OFRatio);
+Machcurve  = machFromArea(stationrad, gamma_e, ThroatRadiusIN); % supersonic
+T          = Tcomb ./ (1 + (gamma_e-1)/2 .* Machcurve.^2);
+P          = CombustionPressure .* (1 + (gamma_e-1).*0.5 .* Machcurve.^2) ...
+                                          .^(-gamma_e./(gamma_e-1));
+Taw        = T .* (1 + RecoveryFactor*0.5*(gamma_e - 1) .* Machcurve.^2);                          % simple 0.9 factor
 
-T    = Tcombustion ./ (1 + (gamma_e-1)/2 .* Machcurve.^2);
-P = CombustionPressure .* (1 + (gamma_e-1).*0.5 .* Machcurve.^2).^(-1*gamma_e./(gamma_e-1));
+%% ========= 5) COOLANT & WALL SOLUTION LOOP ===========================
+N = numel(stationrad);        % number of axial cells
 
-% Target mass flow for oxidizer and fuel
-mdotF = Mflow/(1+OFRatio) 
-mdotO = Mflow - mdotF
+% ----- Pre-allocate result arrays -------------------------------------
+Tcw  = zeros(1,N);    Thw  = Tcw;    q = Tcw;    he = Tcw;
+Tbulkcoolant      = zeros(1,N+1);    Tbulkcoolant(end) = Tcoolantinit;
+Pcoolant          = zeros(1,N+1);    Pcoolant(end)     = Pcoolantinit;
+Rhocoolant        = zeros(1,N+1);
+Vcoolant          = zeros(1,N+1);
+IPAkinematicVisc  = zeros(1,N+1);
+ReIPA             = zeros(1,N+1);
+FrictionFactor    = zeros(1,N+1);
+Vapor             = false(1,N);
+Stress            = zeros(1,N);
 
+% ---- Initial coolant properties at nozzle exit (node N+1) ------------
+Ripa                = 8.3144598/60.0950 * 1e3;            % [J/kg-K]
+Rhocoolant(end)     = Pcoolant(end)/(Ripa*Tbulkcoolant(end));
+HydraulicDiameter_m = 4*(width*IN2M*height*IN2M)/ ...
+                       (2*IN2M*width + 2*IN2M*height);
+Vcoolant(end)       = (mdotF/Ncc) / (Rhocoolant(end) * width*IN2M * height*IN2M);
+IPAkinematicVisc(end) = ipaKinV(Tbulkcoolant(end));
+ReIPA(end)          = Vcoolant(end) * HydraulicDiameter_m / IPAkinematicVisc(end);
+FrictionFactor(end) = darcy(roughness,HydraulicDiameter_m,ReIPA(end));
 
-% bulk-gas properties at this O/F (CEA exit columns are close enough)
-cp0  = ceaInterp(cea,'Cp','O_F',OFRatio);      % J/(kg·K)
-Pr0  = ceaInterp(cea,'Pr','O_F',OFRatio);      % –
-T0   = Tcombustion;                            % K (stagnation)
+% ---- Helper area vectors ---------------------------------------------
+Agas = 2*pi*stationrad*IN2M .* (simDx*IN2M) / Ncc;    % per channel [m^2]
+Lc   = height*IN2M + 0.5*finwidth*IN2M/2;             % fin length [m]
+mFin = sqrt(2*hcoolant/(k*0.5*finwidth*IN2M));
+nfn  = tanh(mFin*Lc)/(mFin*Lc);                       % fin efficiency
+Acoolant = (2*nfn*height*IN2M + width*IN2M) * simDx*IN2M; % [m^2/cell]
 
-combustioncea = parseCEAtransport("2transportN2OxIPA.txt", 'true');
+% ---- Anon funcs -------------------------------------------------------
+combustioncea = parseCEAtransport("2transportN2OxIPA.txt",'true');
 
-h = @(Thw, i) bartz(P(i), T(i), Machcurve(i), stationarea(i).*0.00064516, ThroatArea, fillets*0.0254, OFRatio, Thw, Cstar, combustioncea);
+h  = @(Thw_,i) bartz(P(i),T(i),Machcurve(i),stationarea(i)*0.00064516, ...
+                     ThroatArea,filletsIN*IN2M,OFRatio,Thw_,Cstar,combustioncea);
+qCoolant = @(Tcw_,Tbulk) hcoolant*Acoolant.*(Tcw_-Tbulk);
+qWall    = @(Thw_,Tcw_,i) k*Agas(i).*(Thw_-Tcw_)/(wallthickness*IN2M);
+qGas     = @(Thw_,i) h(Thw_,i).*Agas(i).*(Taw(i)-Thw_);
+optsFS   = optimset('Display','off');
 
-%hg(Taw - Twg) = q = (k/t) * (Twg - Twc) = hc * (Twc - Tco)
+% ---- March from NOZZLE exit → chamber (reverse x) --------------------
+for i = N:-1:1
+    bulkIn = Tbulkcoolant(i+1);
+    pin    = Pcoolant(i+1);
 
+    f = @(x) [ qCoolant(x(1),bulkIn) - qGas(x(2),i) ; ...
+               qCoolant(x(1),bulkIn) - qWall(x(2),x(1),i) ];
+    var = fsolve(f,[bulkIn; T(i)],optsFS);   % x(1)=Tcw , x(2)=Thw
 
-Ncc = 100; %number of coolant channels
-Agas = (2*pi*stationrad.*0.0254.*simDx.*0.0254)/Ncc;
+    Tcw(i) = var(1);   Thw(i) = var(2);   he(i) = h(Thw(i),i);
+    q(i)   = qGas(Thw(i),i);
 
-Taw = T.*0.9;
+    % --- coolant property update --------------------------------------
+    dT             = q(i)/( (mdotF/Ncc)*cpIPA );
+    Tbulkcoolant(i)= bulkIn + dT;
 
+    dP = (FrictionFactor(i+1)*Rhocoolant(i+1)*Vcoolant(i+1)^2* ...
+           simDx*IN2M)/(2*HydraulicDiameter_m);
+    Pcoolant(i) = pin - dP;
 
-wallthickness = 0.03; %in
-hcoolant = 25*10^3 %W/M^2K
-height = 0.03; %in
-width = 0.03; %in
-k = 15;
-finwidth = 0.04; %in
-Lc = height*0.0254 + (0.5 * finwidth*0.0254)/2;
-m = sqrt(2*(hcoolant)/(k * 0.5 * finwidth*0.0254));
-nfn = tanh(m*Lc)/(m*Lc);
+    Rhocoolant(i) = Pcoolant(i)/(Ripa*Tbulkcoolant(i));
+    Vcoolant(i)   = (mdotF/Ncc)/(Rhocoolant(i)*width*IN2M*height*IN2M);
+    IPAkinematicVisc(i)= ipaKinV(Tbulkcoolant(i));
+    ReIPA(i)      = Vcoolant(i)*HydraulicDiameter_m/IPAkinematicVisc(i);
+    FrictionFactor(i)= darcy(roughness,HydraulicDiameter_m,ReIPA(i));
 
-Acoolant = (2*nfn*height*0.0254 + width*0.0254)*simDx*0.0254;
+    Vapor(i) = strcmpi(ipa(Pcoolant(i),Tbulkcoolant(i)),"VAPOR");
 
-qCoolant = @(Tcw, Tbulkcoolant) hcoolant.*Acoolant.*(Tcw - Tbulkcoolant);
-
-qWall = @(Thw, Tcw, i) k.*Agas(i).*(Thw -Tcw)./(wallthickness.*0.0254);
-
-qGas = @(Thw, i) h(Thw, i).*Agas(i).*(Taw(i)-Thw);
-
-Tcoolantinit = 300; %Initial Coolant temperature, K
-Pcoolantinit = 400 * 6894.76; % Pa
-
-N   = length(stationrad);          % total axial cells
-
-% --- pre‑allocate result vectors (faster & avoids confusing zeros) ------
-Tcw          = zeros(1,N);         % cold‑wall temperature
-Thw          = zeros(1,N);         % hot‑wall temperature
-q            = zeros(1,N);         % gas‑side heat flux
-he           = zeros(1,N);         % Bartz hg
-deltaT       = zeros(1,N);         % coolant ΔT per cell
-
-Tbulkcoolant = zeros(1,N+1);       % bulk coolant temp at cell nodes
-Tbulkcoolant(end) = Tcoolantinit;  % *** inlet is NOW at the NOZZLE exit ***
-Pcoolant = zeros(1,N+1);
-Pcoolant(end) = Pcoolantinit;
-opts = optimset('Display','off');
-cpIPA = 2600;
-Vapor = zeros(1, N);
-
-Ripa = 8.3144598/60.0950 * 10^3; %J/kg K
-Rhocoolant = zeros(1,N+1);
-Rhocoolant(end) = Pcoolant(end)/(Ripa * Tbulkcoolant(end));
-Vcoolant = zeros(1,N+1);
-Vcoolant(end) = (mdotF/Ncc)/(Rhocoolant(end) * width * 0.0254 * height * 0.0254);
-
-IPAkinematicViscocity = ipaKinV(Tbulkcoolant(end)); %m^2/s
-HydraulicDiameter = 4*(width *0.0254 *  height * 0.0254)/ (2*0.0254*width + 2*0.0254*height);
-ReIPA = zeros(1, N+1);
-ReIPA(end) = (Vcoolant(end) * HydraulicDiameter) / IPAkinematicViscocity;
-
-roughness = 6.3*10^-6;
-FrictionFactor = zeros(1, N+1);
-FrictionFactor(end) = darcy(roughness, HydraulicDiameter,ReIPA(end));
-
-for i = N:-1:1                         % *** march from nozzle → chamber ***
-    
-    bulkIn = Tbulkcoolant(i+1);       % coolant entering this cell (downstream)
-    pin = Pcoolant(i+1);
-    % --- FSOLVE for wall / coolant interface temps ---------------------
-    f  = @(x) [ ...
-        qCoolant(x(1), bulkIn) - qGas(x(2), i) ; ...
-        qCoolant(x(1), bulkIn) - qWall(x(2), x(1), i) ];
-
-    x0 = [bulkIn ;  T(i)];            % initial guess
-    var= fsolve(f, x0, opts);         % var(1)=Tcw , var(2)=Thw
-
-    % --- store results --------------------------------------------------
-    Tcw(i) = var(1);
-    Thw(i) = var(2);
-    he(i)  = h(var(2), i);
-
-    q(i)       = qGas(Thw(i), i);
-    deltaT(i)  = q(i) / ((mdotF/Ncc) * cpIPA);
-    Tbulkcoolant(i) = bulkIn + deltaT(i);
-    deltaP = (FrictionFactor(i+1) * Rhocoolant(i+1) * Vcoolant(i+1)^2 * simDx * 0.0254)/(2*HydraulicDiameter);
-    Pcoolant(i) = pin - deltaP;
-    Rhocoolant(i) = Pcoolant(i)/(Ripa * Tbulkcoolant(i));
-    Vcoolant(i) = (mdotF/Ncc)/(Rhocoolant(i) * width * 0.0254 * height * 0.0254);
-    IPAkinematicViscocity = ipaKinV(Tbulkcoolant(i));
-    ReIPA(i) = (Vcoolant(i) * HydraulicDiameter) / IPAkinematicViscocity;
-    FrictionFactor(i) = darcy(roughness, HydraulicDiameter,ReIPA(i));
-
-    % coolant leaving this cell (upstream) becomes bulkIn for next i‑1
-
-    if(ipa(Pcoolant(i), Tbulkcoolant(i)) == "VAPOR")
-        %disp("WARNING VAPOR IN COOOLANT LINES")
-        Vapor(i) = 1;
-    end
+    % --- simple thin-wall hoop+thermal stress -------------------------
+    Stress(i) = ((Pcoolant(i)-P(i))*stationrad(i)*IN2M)/(wallthickness*IN2M) + ...
+                 (Echamber*CTEchamber*q(end)*wallthickness*IN2M)/ ...
+                 (2*(1-Poissons)*k);
 end
 
-%% ---------------- P L O T S ----------------
+%% ========= 6) PLOTS ==================================================
+figure('Name','Regen Nozzle Results','Color','w');
 
-%% ---------- temperatures + dual‑condition shading + legend labels ----
-Tmax = 1100;                      % wall‑temperature limit (K)
+% 6a) Wall / coolant / gas temperatures
+axT = subplot(2,2,1); hold(axT,'on'); grid(axT,'on');
+plot(axT,x,Thw,'DisplayName','Hot Wall');
+plot(axT,x,Tcw,'DisplayName','Cold Wall');
+plot(axT,[x, x(end)+simDx],Tbulkcoolant,'DisplayName','Coolant');
+plot(axT,x,T,'DisplayName','Combustion');
+plot(axT,x,Taw,'DisplayName','Adiabatic');
 
-axT  = subplot(2,2,1);  hold(axT,'on');
-
-hHot   = plot(axT,x,Thw, 'DisplayName','Hot Wall');
-hCold  = plot(axT,x,Tcw, 'DisplayName','Cold Wall');
-
-if numel(Tbulkcoolant)==numel(x)+1
-    xCool = [x, x(end)+simDx];
-    hCool = plot(axT,xCool,Tbulkcoolant,'DisplayName','Coolant');
-else
-    hCool = plot(axT,x,Tbulkcoolant,   'DisplayName','Coolant');
-end
-
-hComb = plot(axT,x,T,   'DisplayName','Combustion');
-hAw   = plot(axT,x,Taw, 'DisplayName','Adiabatic');
-grid(axT,'on');
-
+% --- shading vapour and over-temp regions -----------------------------
 yl = ylim(axT);
-
-% --- vapour shading (red) ---------------------------------------------
-Vapor = logical(Vapor(:).');
-d = diff([0 Vapor 0]);  s = find(d== 1);  e = find(d==-1)-1;
-for k = 1:numel(s)
-    patch('XData',[x(s(k)) x(e(k)) x(e(k)) x(s(k))], ...
-          'YData',[yl(1)  yl(1)  yl(2)  yl(2)], ...
-          'FaceColor',[1 0.6 0.6],'FaceAlpha',0.30,'EdgeColor','none', ...
+shade = @(idx,color,alpha) patch('XData',[x(idx(1)) x(idx(end)) x(idx(end)) x(idx(1))], ...
+          'YData',[yl(1) yl(1) yl(2) yl(2)], ...
+          'FaceColor',color,'FaceAlpha',alpha,'EdgeColor','none', ...
           'Parent',axT);
-end
 
-% --- over‑temperature shading (orange) --------------------------------
-over = Thw > Tmax;
-d2 = diff([0 over 0]);  s2 = find(d2== 1);  e2 = find(d2==-1)-1;
-for k = 1:numel(s2)
-    patch('XData',[x(s2(k)) x(s2(k)) x(e2(k)) x(e2(k))], ...
-          'YData',[yl(1)   yl(2)   yl(2)   yl(1)], ...
-          'FaceColor',[1 0.8 0.4],'FaceAlpha',0.25,'EdgeColor','none', ...
-          'Parent',axT);
-end
+if any(Vapor),   shade(find(Vapor),[1 0.6 0.6],0.30); end
+if any(Thw>Tmax),shade(find(Thw>Tmax),[1 0.8 0.4],0.25);end
 
-% ---- dummy patches for legend keys -----------------------------------
-hLegVap  = patch(NaN,NaN,[1 0.6 0.6],'FaceAlpha',0.30,'EdgeColor','none',...
-                 'DisplayName','Vapour region');
-hLegOver = patch(NaN,NaN,[1 0.8 0.4],'FaceAlpha',0.25,'EdgeColor','none',...
-                 'DisplayName',sprintf('T_{hw} > %g K',Tmax));
+legend(axT,'Location','best');
+xlabel(axT,'Nozzle Station, in'); ylabel(axT,'Temperature [K]');
 
-legend(axT,[hHot hCold hCool hComb hAw hLegVap hLegOver],'Location','best');
-hold(axT,'off');
-
-
-% -------- wall‑adiabatic ΔT ------------------------------------------
+% 6b) Stress & temperature margins
 subplot(2,2,2);
-plot(x,Thw'-Taw); grid on;
+plot(x,Strength./Stress - sfos,'DisplayName','Stress Margin'); hold on; grid on;
+plot(x,Tmax./Thw - tfos,'DisplayName','Temp  Margin');
+legend; xlabel('Nozzle Station, in'); ylabel('Margin (-)');
 
-% -------- Bartz h_g ---------------------------------------------------
+% 6c) Coolant pressure profile
 subplot(2,2,3);
-plot(x,he*1e-3); grid on;
+plot([x, x(end)+simDx],Pcoolant*0.000145038); grid on;
+xlabel('Nozzle Station, in'); ylabel('Coolant Pressure [psi]');
 
-% -------- radius profile ---------------------------------------------
+% 6d) Nozzle profile
 subplot(2,2,4);
 plot(x,stationrad,'k',x,-stationrad,'k'); axis equal;
+xlabel('Axial Station, in'); ylabel('Radius, in'); title('Nozzle Profile');
 
-% -------- coolant pressure (separate fig) ----------------------------
-figure;
-if numel(Pcoolant)==numel(x)+1
-    xP = [x, x(end)+simDx];
-    plot(xP,Pcoolant*0.000145038);
-else
-    plot(x,Pcoolant*0.000145038);
-end
-grid on;
+%% ========= 7) SUMMARY OUTPUT =========================================
+summary = struct( ...
+    'MassFlow_kg_s',Mflow, ...
+    'mdot_fuel',mdotF, 'mdot_oxidizer',mdotO, ...
+    'ThroatRadius_in',ThroatRadiusIN, 'ExitRadius_in',ExitRadiusIN, ...
+    'Lstar_in',Lstar, ...
+    'MaxHotWallTemp_K',max(Thw), 'MaxStress_Pa',max(Stress), ...
+    'MinStressMargin',min(Strength./Stress) );
+
+fprintf('\n===== RUN SUMMARY =====\n'); disp(summary);
+% Uncomment next line to save for post-processing:
+% save('regen_summary.mat','summary');
