@@ -78,7 +78,7 @@ while ~converged
     Rgas = Cp - Cv;
     % Calculate required mass flow from nozzle based on thermo properties
     Pratio = in.environment.AmbientPressure/PC;
-    PratioCritical = (2/(GammaC + 1))^(GammaC/(GammaC-1));
+    PratioCritical = (2/(GammaC + 1))^(GammaC/(GammaC-1)s);
     if(Pratio < PratioCritical)
         % Choked flow
         RealMdot = PC * min(stationArea) * (Tcomb)^-0.5 * sqrt(GammaC/Rgas) * (0.5*(GammaC + 1))^((-1 - GammaC)/(2 * (GammaC -1)));
