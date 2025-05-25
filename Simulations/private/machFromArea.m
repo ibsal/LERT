@@ -43,7 +43,7 @@ function M = machFromArea(Rstation, gamma, Rthroat)
                 M(i) = 1;
             else
                 fun = @(M) Afun(M) - Ar;
-                M(i) = fzero(fun, [1e-3 0.99999999999999]);
+                M(i) = fzero(fun, [1e-6 0.99999999999999]);
             end
         elseif i == throatIdx              % throat
             M(i) = 1;

@@ -1,2 +1,0 @@
-cea2csv('rocketceacomplete.txt','rocketCEAgrid.csv');
-Tc = ceaGridInterp('rocketCEAgrid.csv','mu_c', 150, 3.9;

@@ -1,0 +1,127 @@
+function M = nozzleMach(Pc, Pb, gamma, A)
+%NOZZLEMACH  Compute 1‑D Mach‑number distribution along a nozzle.
+%
+%   M = nozzleMach(Pc, Pb, gamma, A)
+%
+%   Inputs
+%   ───────────────────────────────────────────────
+%   Pc     – Chamber / stagnation pressure  [Pa]
+%   Pb     – Back (ambient) pressure        [Pa]
+%   gamma  – Ratio of specific heats (Cp/Cv)
+%   A      – Vector of cross‑sectional areas at each axial station [m²]
+%            (include both converging and diverging sections)
+%
+%   Output
+%   ───────────────────────────────────────────────
+%   M      – Vector of Mach numbers at the same stations as A
+%
+%   The routine decides automatically whether the nozzle operates:
+%     1) Entirely subsonic (unchoked)
+%     2) Just choked (M=1 at throat, subsonic everywhere else)
+%     3) Choked with isentropic supersonic flow to the exit
+%     4) Choked with a normal shock in the divergent section
+%
+%   Assumptions
+%   ───────────────────────────────────────────────
+%   • 1‑D, steady, perfect‑gas, adiabatic, no friction.
+%   • Normal shock, if present, obeys ideal shock relations.
+%   • The throat is the minimum area in A.
+%
+%   Author: <your name>   Date: <date>
+
+% ─── Pre‑processing ────────────────────────────────────────────────────────
+A  = A(:).';                    % row vector
+Nt = find(A == min(A), 1);      % throat index
+At = A(Nt);
+Ar = A // At;                    % area ratio A/A*
+
+% helper ↦ invert area‑Mach
+area2mach = @(AR, branch) fzero( ...
+    @(M) ((1./M).* ((2/(gamma+1))*(1+(gamma-1)/2*M.^2)) ...
+           .^((gamma+1)/(2*(gamma-1)))) - AR, ...
+    branch);                    % branch=0.2 → sub, branch=3 → sup
+
+% ─── Critical pressure ratio for choking ───────────────────────────────────
+Pstar_by_P0 = (2/(gamma+1))^(gamma/(gamma-1));   % P* / P0
+isChoked = (Pb/Pc) < Pstar_by_P0;
+
+% ───  CASE 0: Un‑choked (fully subsonic)  ──────────────────────────────────
+if ~isChoked
+    M = arrayfun(@(ARi) area2mach(ARi, 0.2), Ar);  % subsonic root
+    return
+end
+
+% ─── Downstream (exit) solutions for a choked nozzle ───────────────────────
+Ae_At  = Ar(end);
+Me_sub = area2mach(Ae_At, 0.2);     % sub‑branch
+Me_sup = area2mach(Ae_At, 3.0);     % sup‑branch
+
+Pe_sub = Pc * (1+(gamma-1)/2*Me_sub^2)^(-gamma/(gamma-1));
+Pe_sup = Pc * (1+(gamma-1)/2*Me_sup^2)^(-gamma/(gamma-1));
+
+% Decide among the three choked regimes
+if Pb >= Pe_sub                       % (1) JUST CHOKED, fully subsonic
+    M = arrayfun(@(ARi) area2mach(ARi, 0.2), Ar);
+    M(Nt) = 1;
+    disp("JUST CHOKED)")
+    % throat exactly sonic
+    return
+elseif Pb <= Pe_sup                   % (2) ISENTROPIC SUPERSONIC
+    M = zeros(size(A));
+    for k = 1:numel(A)
+        if k < Nt,  M(k) = area2mach(Ar(k), 0.2);      % converging (sub)
+        elseif k==Nt, M(k)=1;
+        else        , M(k) = area2mach(Ar(k), 3.0);    % diverging (sup)
+        end
+        disp("ISENTROPIC SUPERSONIC")
+    end
+    return
+end
+
+% ─── (3) NORMAL‑SHOCK case  ───────────────────────────────────────────────
+% Find the station where a normal shock makes Pb match exit pressure.
+% Sweep through divergent section until best match.
+bestErr = inf;  idxShock = NaN;
+disp("SHOCK")
+for j = Nt+1:numel(A)-1
+    % upstream supersonic Mach at station j
+    M1 = area2mach(Ar(j), 3.0);
+    % Normal‑shock relations
+    M2 = sqrt( (1 + (gamma-1)/2*M1^2) / (gamma*M1^2 - (gamma-1)/2) );
+    P2_by_P1 = 1 + 2*gamma/(gamma+1)*(M1^2 - 1);
+    P1       = Pc * (1+(gamma-1)/2*M1^2)^(-gamma/(gamma-1));
+    P2       = P1 * P2_by_P1;           % static P immediately after shock
+    % Now let the subsonic flow expand isentropically to exit
+    AR_down  = Ar(j+1:end) / Ar(j);     % area ratio from post‑shock A*
+    % local A* downstream equals area at shock because M2<1
+    Me_vec   = arrayfun(@(ARi) area2mach(ARi, 0.2), AR_down);
+    Pe       = P2;
+    for kk = 2:numel(Me_vec)
+        Pe = Pe * ...
+            (1 + (gamma-1)/2*Me_vec(kk-1)^2)^(gamma/(gamma-1)) / ...
+            (1 + (gamma-1)/2*Me_vec(kk)^2)^(gamma/(gamma-1));
+    end
+    err = abs(Pe - Pb);
+    if err < bestErr
+        bestErr = err;
+        idxShock = j;
+        M_downstream = Me_vec;
+    end
+end
+
+if isnan(idxShock)
+    error('Could not locate a normal‑shock position with the given Pb.');
+end
+
+% Build final Mach vector
+M = zeros(size(A));
+for k = 1:idxShock-1                % upstream: sonic + supersonic
+    if k < Nt,  M(k) = area2mach(Ar(k), 0.2);
+    elseif k==Nt, M(k)=1;
+    else         M(k) = area2mach(Ar(k), 3.0);
+    end
+end
+M(idxShock) = area2mach(Ar(idxShock), 3.0);  % M1 just before shock
+M(idxShock+1) = M2;                          % immediately after shock
+M(idxShock+2:end) = M_downstream(2:end);     % further subsonic expansion
+end
