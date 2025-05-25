@@ -1,4 +1,4 @@
-function M = nozzleMach(Pc, Pb, gamma, A)
+function [M, T, P] = nozzleMach(Pc, Pb, gamma, A, Tc)
 %NOZZLEMACH  Compute 1‑D Mach‑number distribution along a nozzle.
 %
 %   M = nozzleMach(Pc, Pb, gamma, A)
@@ -48,6 +48,9 @@ isChoked = (Pb/Pc) < Pstar_by_P0;
 % ───  CASE 0: Un‑choked (fully subsonic)  ──────────────────────────────────
 if ~isChoked
     M = arrayfun(@(ARi) area2mach(ARi, [1e-6, 0.9999999999]), Ar);  % subsonic root
+    T          = Tc ./ (1 + (gamma-1)/2 .* M.^2);
+    P          = Pc .* (1 + (gamma-1).*0.5 .* M.^2) ...
+                                          .^(-gamma./(gamma-1));
     return
 end
 
@@ -64,6 +67,9 @@ if Pb >= Pe_sub                       % (1) JUST CHOKED, fully subsonic
     M = arrayfun(@(ARi) area2mach(ARi, [1e-6, 0.9999999999]), Ar);
     M(Nt) = 1;
     disp("JUST CHOKED)")
+    T          = Tc ./ (1 + (gamma-1)/2 .* M.^2);
+    P          = Pc .* (1 + (gamma-1).*0.5 .* M.^2) ...
+                                          .^(-gamma./(gamma-1));
     % throat exactly sonic
     return
 elseif Pb <= Pe_sup                   % (2) ISENTROPIC SUPERSONIC
@@ -74,6 +80,9 @@ elseif Pb <= Pe_sup                   % (2) ISENTROPIC SUPERSONIC
         else        , M(k) = area2mach(Ar(k), [1.0000001, 20]);    % diverging (sup)
         end
     end
+    T          = Tc ./ (1 + (gamma-1)/2 .* M.^2);
+    P          = Pc .* (1 + (gamma-1).*0.5 .* M.^2) ...
+                                          .^(-gamma./(gamma-1));
     return
 end
 
@@ -82,29 +91,31 @@ end
 % Sweep through divergent section until best match.
 bestErr = inf;  idxShock = NaN;
 disp("SHOCK")
+Pstag2 = 0;
 for j = Nt+1:numel(A)-1
     % upstream supersonic Mach at station j
     M1 = area2mach(Ar(j), [1.0000001, 20]);
     % Normal‑shock relations
-    M2 = sqrt((1 + ((gamma-1)/2) * M1^2)/(gamma * M1^2 - (gamma -1)/2));
+    M2s = sqrt((1 + ((gamma-1)/2) * M1^2)/(gamma * M1^2 - (gamma -1)/2));
     P2_by_P1 = 1 + ((2*gamma)/(gamma+1)) * (M1^2 - 1);
     P1       = Pc * (1+(gamma-1)/2*M1^2)^(-gamma/(gamma-1));
     P2       = P1 * P2_by_P1;           % static P immediately after shock
-    % Now let the subsonic flow expand isentropically to exit
-    AR_down  = Ar(j+1:end) / Ar(j);     % area ratio from post‑shock A*
-    % local A* downstream equals area at shock because M2<1
-    Me_vec   = arrayfun(@(ARi) area2mach(ARi, [1e-6, 0.9999999999]), AR_down);
-    Pe       = P2;
-    for kk = 2:numel(Me_vec)
-        Pe = Pe * ...
-            (1 + (gamma-1)/2*Me_vec(kk-1)^2)^(gamma/(gamma-1)) / ...
-            (1 + (gamma-1)/2*Me_vec(kk)^2)^(gamma/(gamma-1));
-    end
+    Pstarg2 = P2/((1 + 0.5*(gamma-1) * M2s^2)^((-1*gamma)/(gamma-1)));
+    % --- NEW critical area after the shock -----------------------------
+    F_sub  = @(M) (1./M) .* ((2/(gamma+1))*(1+(gamma-1)/2*M.^2)) ...
+                              .^((gamma+1)/(2*(gamma-1)));
+    Astar2 = A(j) / F_sub(M2s);           % <-- this line replaces AR_down = ...
+    % downstream area ratios referenced to the NEW A*
+    AR_down  = A(j+1:end)/Astar2;
+    Me_vec   = arrayfun(@(ARi) area2mach(ARi,[1e-6,0.9999999]), AR_down);
+    Pe       = Pstarg2 * (1 + 0.5 * (gamma-1) * Me_vec(end)^2)^((-1*gamma)/(gamma-1));
     err = abs(Pe - Pb);
     if err < bestErr
+        M2 = M2s;
         bestErr = err;
         idxShock = j;
         M_downstream = Me_vec;
+        Pstag2 = Pstarg2;
     end
 end
 
@@ -120,7 +131,15 @@ for k = 1:idxShock-1                % upstream: sonic + supersonic
     else         M(k) = area2mach(Ar(k), [1.0000001, 20]);
     end
 end
+
 M(idxShock) = area2mach(Ar(idxShock), [1.0000001, 20]);  % M1 just before shock
 M(idxShock+1) = M2;                          % immediately after shock
 M(idxShock+2:end) = M_downstream(2:end);     % further subsonic expansion
+T = zeros(size(M));
+P = zeros(size(M));
+T          = Tc ./ (1 + (gamma-1)/2 .* M.^2);
+P(1:idxShock)          = Pc .* (1 + (gamma-1).*0.5 .* M(1:idxShock).^2) ...
+                                          .^(-gamma./(gamma-1));
+P((idxShock+1):end) = Pstag2 .* (1 + 0.5.*(gamma-1) .* M((idxShock+1):end).^2).^((-1*gamma)/(gamma-1));
+
 end

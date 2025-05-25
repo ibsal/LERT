@@ -56,7 +56,7 @@ in.environment.OxPressure      = 30*PSI2PA ;   % [Pa]
 % ────────────────────────────────────────────────────────────────────────────
 % 6) Numerical‑grid controls
 % ────────────────────────────────────────────────────────────────────────────
-in.numerics.simDx = 0.002*IN2M ;   % [m] axial cell size
+in.numerics.simDx = 0.01*IN2M ;   % [m] axial cell size
 in.numerics.dt    = 1e-5 ;   % [s] time step
 
 % ────────────────────────────────────────────────────────────────────────────
@@ -73,5 +73,5 @@ in.injector.FuelCd       = 0.95 ;     % [‑]
 % Save or pass "in" to your solver/analysis script:
 results = engineSolver(in);
 
-plot(results.station.x, results.nozzle.Pressure/PSI2PA)
+plot(results.station.x, results.nozzle.Pressure)
 hold on

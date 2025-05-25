@@ -41,6 +41,7 @@ out.meta = in;
 
 % Output station positions used for calculations
 out.station.x = (0:in.numerics.simDx:(in.nozzle.ChamberLength + in.nozzle.NozzleLength));
+%% NOTE: IT COULD BE SMART TO RESOLVE TO HAVE GREATER RESOLUTION NEAR THE THROAT? IDK???
 
 % Generate geometry data for all other processes
 
@@ -85,8 +86,7 @@ while ~converged
     PratioCritical = (2/(GammaC + 1))^(GammaC/(GammaC-1));
     if(PC<Pb)
         %Backflow
-        RealMdot = 10;
-        PC = Pb;
+        error("BACKFLOW HAS OCCURED");
         Backflow = 1;
     elseif(Pratio < PratioCritical)
         % Choked flow
@@ -105,12 +105,12 @@ while ~converged
     Merror = RealMdot - (MdotF + MdotO);
     %Compute mach number along chamer - todo make sure this accounts for
     %shocks somehow?
-    M = nozzleMach(PC,Pb,GammaC, StationArea);
+    [M, T, P] = nozzleMach(PC,Pb,GammaC, StationArea, Tcomb);
+    out.nozzle.Temperature = T;
+    out.nozzle.Pressure = P;
+    out.nozzle.MachNumber = M;
     % Isentropic flow relations for pressure and temperature station
     
-    T          = Tcomb ./ (1 + (GammaC-1)/2 .* M.^2);
-    P          = PC .* (1 + (GammaC-1).*0.5 .* M.^2) ...
-                                          .^(-GammaC./(GammaC-1));
             %compute remaining mach curve 
     % Calculate heating equilibrium for hot wall, cold wall, coolant
     % temperature, and coolant pressure along the channel. 
@@ -129,8 +129,5 @@ while ~converged
     % Check for convergance where errors are both within bounds
 end
 
-out.nozzle.Temperature = T;
-out.nozzle.Pressure = P;
-out.nozzle.MachNumber = M;
 
 end
