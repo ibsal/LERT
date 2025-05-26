@@ -56,8 +56,8 @@ end
 
 % ─── Downstream (exit) solutions for a choked nozzle ───────────────────────
 Ae_At  = Ar(end);
-Me_sub = area2mach(Ae_At, [1e-6, 0.9999999999]);     % sub‑branch
-Me_sup = area2mach(Ae_At, [1.0000001, 20]);     % sup‑branch
+Me_sub = area2mach(Ae_At, [1e-6, 0.999999999999999999]);     % sub‑branch
+Me_sup = area2mach(Ae_At, [1.00000000000000000001, 2000]);     % sup‑branch
 
 Pe_sub = Pc * (1+(gamma-1)/2*Me_sub^2)^(-gamma/(gamma-1));
 Pe_sup = Pc * (1+(gamma-1)/2*Me_sup^2)^(-gamma/(gamma-1));
@@ -75,9 +75,9 @@ if Pb >= Pe_sub                       % (1) JUST CHOKED, fully subsonic
 elseif Pb <= Pe_sup                   % (2) ISENTROPIC SUPERSONIC
     M = zeros(size(A));
     for k = 1:numel(A)
-        if k < Nt,  M(k) = area2mach(Ar(k), [1e-6, 0.9999999999]);      % converging (sub)
+        if k < Nt,  M(k) = area2mach(Ar(k), [1e-6, 0.999999999999]);      % converging (sub)
         elseif k==Nt, M(k)=1;
-        else        , M(k) = area2mach(Ar(k), [1.0000001, 20]);    % diverging (sup)
+        else        , M(k) = area2mach(Ar(k), [1.000000000001, 20]);    % diverging (sup)
         end
     end
     T          = Tc ./ (1 + (gamma-1)/2 .* M.^2);

@@ -30,7 +30,7 @@ function out = engineSolver(in)
 %   .chamber
 %   [HotWallTemperature, ColdWallTemperature, Stress]
 %   .mass
-%   [MdotO, MdotF]
+%   [MdotO, MdotF, Mdot, OF]
 %   .meta    - remember input file 
 %   .meta = in
 
@@ -77,6 +77,9 @@ while ~converged
     % INPUT ON THE SOLVER!!!! NEED NEW CEA DATA UGHHHH
     Tcomb   = ceaGridInterp('rocketCEAgrid.csv','T_c', PC, of);
     GammaC = ceaGridInterp('rocketCEAgrid.csv','gamma_c',  PC, of);
+    if GammaC < 1
+        error("GAMMAC < 1")
+    end
     Rhoc = ceaGridInterp('rocketCEAgrid.csv', 'rho_c', PC, of);
     Cp = ceaGridInterp('rocketCEAgrid.csv', 'Cp_c', PC, of);
     Cv = Cp/GammaC;
@@ -103,15 +106,15 @@ while ~converged
     end
     % Compute mass flow error
     Merror = RealMdot - (MdotF + MdotO);
-    %Compute mach number along chamer - todo make sure this accounts for
-    %shocks somehow?
+    out.mass.OF = of;
+    out.mass.MdotO = MdotO;
+    out.mass.MdotF = MdotF;
+    out.mass.Mdot = RealMdot;
     [M, T, P] = nozzleMach(PC,Pb,GammaC, StationArea, Tcomb);
     out.nozzle.Temperature = T;
     out.nozzle.Pressure = P;
     out.nozzle.MachNumber = M;
-    % Isentropic flow relations for pressure and temperature station
-    
-            %compute remaining mach curve 
+    %% Pressure drop section 
     % Calculate heating equilibrium for hot wall, cold wall, coolant
     % temperature, and coolant pressure along the channel. 
     % Establish new pressure drop 
@@ -129,5 +132,6 @@ while ~converged
     % Check for convergance where errors are both within bounds
 end
 
-
+if out.mass.MdotF<0 || out.mass.MdotO<0
+    error("FLOW THROUGH INJECTOR")
 end

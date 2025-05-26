@@ -9,10 +9,10 @@ in = struct();  % root struct container
 % 1) Nozzle geometry
 % ────────────────────────────────────────────────────────────────────────────
 in.nozzle.ChamberLength   = 3*IN2M ;   % [m]
-in.nozzle.ChamberRadius   = 1.3*IN2M ;   % [m]
-in.nozzle.ExitRadius      = 3*IN2M ;   % [m]
-in.nozzle.ThroatRadius    = 0.9*IN2M ;   % [m]
-in.nozzle.NozzleLength    = 3*IN2M ;   % [m]
+in.nozzle.ChamberRadius   = 1*IN2M ;   % [m]
+in.nozzle.ExitRadius      = 1.5*IN2M ;   % [m]
+in.nozzle.ThroatRadius    = 0.436*IN2M ;   % [m]
+in.nozzle.NozzleLength    = 1.5*IN2M ;   % [m]
 in.nozzle.BlendRadius     = 0.5*IN2M ;   % [m]  throat/contour fillet
 in.nozzle.ConvergingAngle = 45 ;   % [deg]
 in.nozzle.DivergingAngle  = 15 ;   % [deg]
@@ -48,10 +48,10 @@ in.material.MaxTemperature   = 1100 ;   % [K]    allowable wall temp
 % ────────────────────────────────────────────────────────────────────────────
 % 5) External/operating conditions
 % ────────────────────────────────────────────────────────────────────────────
-in.environment.AmbientPressure = 10135 * 5;   % [Pa]
-in.environment.FuelPressure    = 30 *PSI2PA;   % [Pa]  injector inlet
+in.environment.AmbientPressure = 10135;   % [Pa]
+in.environment.FuelPressure    = 900 *PSI2PA;   % [Pa]  injector inlet
 in.environment.FuelTemperature = 300;   % [K]
-in.environment.OxPressure      = 30*PSI2PA ;   % [Pa]
+in.environment.OxPressure      = 1000*PSI2PA ;   % [Pa]
 
 % ────────────────────────────────────────────────────────────────────────────
 % 6) Numerical‑grid controls

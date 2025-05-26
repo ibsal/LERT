@@ -7,7 +7,7 @@ if isempty(Fns) || ~strcmp(CacheFile,csvFile)
     props = T.Properties.VariableNames;
     for p = props
         if ismember(p{1},{'Pc','O_F'}), continue, end
-        Fns.(p{1}) = scatteredInterpolant(T.Pc, T.O_F, T.(p{1}), 'natural');
+        Fns.(p{1}) = scatteredInterpolant(T.Pc, T.O_F, T.(p{1}), 'natural','boundary');
     end
 end
 if ~isfield(Fns,field)
