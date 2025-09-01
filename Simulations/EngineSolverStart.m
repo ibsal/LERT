@@ -1,3 +1,5 @@
+addpath 'Interpolation WIP'
+
 IN2M = 0.0254;
 PSI2PA = 6894.76;
 %% ─────────────────────────── Engine Input Struct ───────────────────────────
@@ -10,7 +12,7 @@ in = struct();  % root struct container
 % ────────────────────────────────────────────────────────────────────────────
 in.nozzle.ChamberLength   = 3*IN2M ;   % [m]
 in.nozzle.ChamberRadius   = 1*IN2M ;   % [m]
-in.nozzle.ExitRadius      = 1.5*IN2M ;   % [m]
+in.nozzle.ExitRadius      = 2*IN2M ;   % [m]
 in.nozzle.ThroatRadius    = 0.436*IN2M ;   % [m]
 in.nozzle.NozzleLength    = 1.5*IN2M ;   % [m]
 in.nozzle.BlendRadius     = 0.5*IN2M ;   % [m]  throat/contour fillet

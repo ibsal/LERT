@@ -4,14 +4,14 @@
 %--------------------------------------------------------------
 %  * User-adjustable inputs are grouped in SECTION 1 below *
 %--------------------------------------------------------------
-%  * Code by Isaac Sal. Nice comment blocks by ChatGPT
+%  * Code by Isaac Sal
 %--------------------------------------------------------------
 clear; clc;
 
 %% ========= 1) USER-ADJUSTABLE PARAMETERS =============================
 % -- GLOBAL DESIGN TARGETS ---------------------------------------------
 Thrust         = 250 * 4.44822;        % [N]  design thrust
-OFRatio        = 3;                  % [-]  oxidizer / fuel mass ratio
+OFRatio        = 2;                  % [-]  oxidizer / fuel mass ratio
 
 % -- COMBUSTION CONDITIONS ---------------------------------------------
 CombustionPressure = 300 * 6894.76;    % [Pa]
@@ -24,33 +24,33 @@ NozzleLengthIN  = 1.5;                 % nozzle length   [in]
 filletsIN       = 1;                   % blend radius    [in]
 
 % -- COOLANT-CHANNEL & WALL GEOMETRY -----------------------------------
-Ncc            = 40;       % number of coolant channels
-wallthickness  = 0.03;     % [in] wall separating hot & cold sides
-height         = 0.03;     % [in] channel height  (open gap)
-width          = 0.05;     % [in] channel width
-finwidth       = 0.04;     % [in] fin (land) width between channels
+Ncc            = 20;       % number of coolant channels
+wallthickness  = 0.04;     % [in] wall separating hot & cold sides
+height         = 0.07;     % [in] channel height  (open gap)
+width          = 0.07;     % [in] channel width
+finwidth       = 0.125;     % [in] fin (land) width between channels
 
 % -- THERMAL / MATERIAL PROPERTIES -------------------------------------
-hcoolant  = 25e3;          % [W/m^2-K] coolant-side h-coefficient
-k          = 15;           % [W/m-K]   wall conductivity
+hcoolant  = 20e3;          % [W/m^2-K] coolant-side h-coefficient
+k          = 152;           % [W/m-K]   wall conductivity
 Tcoolantinit = 300;        % [K]       coolant inlet temperature
 Pcoolantinit = 500 * 6894.76; % [Pa]   coolant inlet pressure
 cpIPA      = 2600;         % [J/kg-K]  IPA specific heat (assumed const.)
 
 Echamber   = 180e9;        % [Pa] Young's modulus of wall
-CTEchamber = 17e-6;        % [1/K] thermal expansion coeff.
+CTEchamber = 25e-6;        % [1/K] thermal expansion coeff.
 Poissons   = 0.27;         % [-]
-Strength   = 400e6;        % [Pa] yield (for margin calc)
-roughness  = 6.3e-6;       % [m]
+Strength   = 8.3e7;        % [Pa] yield (for margin calc)
+roughness  = 6.3e-7;       % [m]
 
 StressFOS  = 2;            % [-]
-TempFOS    = 1.2;          % [-]
+TempFOS    = 1;          % [-]
 
 RecoveryFactor = 0.91;     % 1 is worst case: assumes stagnation heating
 
 % -- NUMERICAL SETTINGS -------------------------------------------------
 simDx = 0.0025;            % [in] axial marching step
-Tmax  = 1100;              % [K]   hot-wall over-temp shading limit
+Tmax  = 700;              % [K]   hot-wall over-temp shading limit
 sfos  = StressFOS;                 % [-]   stress factor-of-safety requirement
 tfos  = TempFOS;               % [-]   temp  factor-of-safety requirement
 
@@ -149,7 +149,7 @@ for i = N:-1:1
 
     Tcw(i) = var(1);   Thw(i) = var(2);   he(i) = h(Thw(i),i);
     q(i)   = qGas(Thw(i),i);
-
+    
     % --- coolant property update --------------------------------------
     dT             = q(i)/( (mdotF/Ncc)*cpIPA );
     Tbulkcoolant(i)= bulkIn + dT;
@@ -224,3 +224,4 @@ summary = struct( ...
 fprintf('\n===== RUN SUMMARY =====\n'); disp(summary);
 % Uncomment next line to save for post-processing:
 % save('regen_summary.mat','summary');
+set(gcf,'Color','black')

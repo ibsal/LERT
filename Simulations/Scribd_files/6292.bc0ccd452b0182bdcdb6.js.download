@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_scribd_app_monolith=self.webpackChunk_scribd_app_monolith||[]).push([[6292],{23217:(p,s,d)=>{d.d(s,{vA:()=>c.r,Ng:()=>r.A,bN:()=>b.A,wA:()=>_.w,d4:()=>a.d});d(32720),d(29563),d(22756),d(77640);d(87988);var r=d(27937),_=d(26897),a=d(58082),b=(d(14342),d(25685)),c=d(44823);(0,d(80361).d)(c.r)},40628:(p,s,d)=>{d(32720),d(49569)}}]);
+//# sourceMappingURL=https://www.scribd.com/webpack/monolith/6292.bc0ccd452b0182bdcdb6.js.map
